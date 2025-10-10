@@ -1,0 +1,29 @@
+import { NextRequest, NextResponse } from "next/server";
+import { Redis } from "@upstash/redis";
+import { UrlRecord } from "@/types/UrlRecord";
+
+const redis = new Redis({
+  url: process.env.UPSTASH_REDIS_REST_URL!,
+  token: process.env.UPSTASH_REDIS_REST_TOKEN!,
+});
+
+export async function GET(
+  req: NextRequest,
+  context: { params: Promise<{ slug: string[] }> }
+) {
+  const { slug } = await context.params;
+  const decodedSlug = decodeURIComponent(slug.join("/"));
+
+  const record: UrlRecord | null = await redis.get(decodedSlug);
+
+  if (!record) {
+    const redirectUrl = new URL("/", req.url);
+    redirectUrl.searchParams.set("error", "not-found");
+    redirectUrl.searchParams.set("pathUrl", decodedSlug);
+    return NextResponse.redirect(redirectUrl);
+  }
+
+  const redirectUrl = new URL("/", req.url);
+  redirectUrl.searchParams.set("pathUrl", decodedSlug);
+  return NextResponse.redirect(redirectUrl);
+}
