@@ -5,7 +5,7 @@ import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { UrlRecord } from "@/types/UrlRecord";
 
-function TestQRCodePageInner() {
+function QRCodePageInner() {
   const searchParams = useSearchParams();
   const error = searchParams.get("error");
   const pathUrl = searchParams.get("pathUrl");
@@ -71,7 +71,7 @@ function TestQRCodePageInner() {
         onSubmit={handleSubmit}
         className="flex flex-col gap-4 w-full max-w-md border rounded-xl p-6 shadow-md"
       >
-        <h1 className="text-xl font-bold">Test QR Code API</h1>
+        <h1 className="text-xl font-bold">QR Code & Shortlink Generator</h1>
 
         <input
           type="text"
@@ -115,10 +115,10 @@ function TestQRCodePageInner() {
   );
 }
 
-export default function TestQRCodePage() {
+export default function QRCodePage() {
   return (
     <Suspense fallback={<div className="text-center p-8">Loading...</div>}>
-      <TestQRCodePageInner />
+      <QRCodePageInner />
     </Suspense>
   );
 }
