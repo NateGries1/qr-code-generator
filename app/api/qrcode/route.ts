@@ -11,6 +11,13 @@ const redis = new Redis({
 export async function POST(request: NextRequest) {
   try {
     const { originalUrl, path } = await request.json();
+    if (path.length > 26) {
+      return NextResponse.json(
+        { error: "Shortlink is not short :(" },
+        { status: 400 }
+      );
+    }
+    
     const newUrl = "https://cmla.cc/s/" + path;
     const original = originalUrl.includes("http")
       ? originalUrl
@@ -32,8 +39,9 @@ export async function POST(request: NextRequest) {
     }
 
     const svgString = await QRCode.toString(newUrl, {
+      version: 5,
       type: "svg",
-      width: 256,
+      width: 375,
       margin: 2,
       color: {
         dark: "#000000",
@@ -42,7 +50,6 @@ export async function POST(request: NextRequest) {
       errorCorrectionLevel: "H",
     });
 
-    // 1️⃣ Extract the viewBox or fallback to width/height
     const viewBoxMatch = svgString.match(/viewBox="0 0 (\d+) (\d+)"/);
     const widthMatch = svgString.match(/width="(\d+)"/);
     const heightMatch = svgString.match(/height="(\d+)"/);
@@ -58,12 +65,10 @@ export async function POST(request: NextRequest) {
       ? parseFloat(heightMatch[1])
       : 256;
 
-    // 2️⃣ Compute centered logo coordinates (scaled to box size)
-    const logoSize = boxWidth * 0.27; // ~27% of QR width
+    const logoSize = boxWidth * 0.27;
     const logoX = (boxWidth - logoSize) / 2;
     const logoY = (boxHeight - logoSize) / 2;
 
-    // 3️⃣ Inject white background + logo dynamically
     const svg = svgString.replace(
       /<svg([^>]+)>/,
       `<svg$1 preserveAspectRatio="xMidYMid meet">
@@ -71,15 +76,15 @@ export async function POST(request: NextRequest) {
     );
 
     const logo = `
-  <rect x="${logoX}" y="${logoY}" width="${logoSize}" height="${logoSize}" fill="white" rx="${
-      logoSize * 0.1
-    }" ry="${logoSize * 0.1}" />
+  <rect x="${logoX - 1}" y="${logoY - 1}" width="${logoSize + 2}" height="${
+      logoSize + 2
+    }" fill="white" />
   <image
-    href="/logo.png"
-    x="${logoX + 1}"
-    y="${logoY + 1}"
-    width="${logoSize - 2}"
-    height="${logoSize - 2}"
+    href="/newlogo.png"
+    x="${logoX}"
+    y="${logoY}"
+    width="${logoSize}"
+    height="${logoSize}"
     preserveAspectRatio="xMidYMid meet"
   />
 `;

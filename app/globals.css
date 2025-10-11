@@ -1,26 +1,66 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
+  --background: #e6e6fa;
   --foreground: #171717;
+  --input-bg: #d9d9d9;
+  --placeholder: #848484;
+  --form-bg: white;
+  --button-bg: black;
+  --shortlink: black;
+  --qr-bg: white;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-belanosima: var(--font-belanosima);
+  --font-lato: var(--font-lato);
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: #3a3a66;
+    --foreground: #ffffff;
+    --button-bg: #e6e6fa;
+    --form-bg: #000000;
+    --input-bg: #efefef;
+    --placeholder: #848484;
+    --shortlink: #848484;
+    --qr-bg: black;
   }
 }
 
 body {
-  background: var(--background);
+  background-color: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+}
+
+form {
+  background-color: var(--form-bg);
+}
+
+label {
+  color: var(--foreground);
+}
+
+.form-field {
+  background-color: var(--input-bg);
+  &::placeholder {
+    color: var(--placeholder);
+  }
+}
+
+.shortlink {
+  background-color: var(--input-bg);
+  color: var(--shortlink);
+}
+
+button {
+  background-color: var(--button-bg);
+  color: var(--form-bg);
+}
+
+.qr-bg {
+  background-color: var(--qr-bg);
 }
