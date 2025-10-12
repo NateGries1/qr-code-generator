@@ -1,7 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { Redis } from "@upstash/redis";
-import QRCode from "qrcode";
 import { UrlRecord } from "@/types/UrlRecord";
+
+const redis = new Redis({
+  url: process.env.UPSTASH_REDIS_REST_URL!,
+  token: process.env.UPSTASH_REDIS_REST_TOKEN!,
+});
 
 export async function POST(request: NextRequest) {
   try {
@@ -12,14 +16,9 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Invalid Path" }, { status: 402 });
     }
 
-    const redis = new Redis({
-      url: process.env.UPSTASH_REDIS_REST_URL!,
-      token: process.env.UPSTASH_REDIS_REST_TOKEN!,
-    });
-
     if (!redis) {
       return NextResponse.json(
-        { error: "Invalid Redis Configuration" },
+        { error: "Redis not configured" },
         { status: 401 }
       );
     }

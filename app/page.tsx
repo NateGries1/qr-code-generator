@@ -68,7 +68,7 @@ function QRCodePageInner() {
     setLoading(false);
   }
 
-  const handleCopy = async () => {
+  const handleCopyText = async () => {
     try {
       await navigator.clipboard.writeText(copyLink);
       setCopied(true);
@@ -77,6 +77,35 @@ function QRCodePageInner() {
     } catch (err) {
       console.error("Failed to copy!", err);
     }
+  };
+
+  const handleCopyCode = async (svgString: string) => {
+    try {
+      await navigator.clipboard.writeText(svgString);
+      console.log("SVG copied!");
+    } catch (err) {
+      console.error("Failed to copy SVG:", err);
+    }
+  };
+
+  const handleSaveCode = (svgString: string, filename = "qrcode.svg") => {
+    // Create a blob from the SVG string
+    const blob = new Blob([svgString], { type: "image/svg+xml" });
+
+    // Create an object URL
+    const url = URL.createObjectURL(blob);
+
+    // Create a hidden link element
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = filename;
+
+    // Trigger the download
+    document.body.appendChild(link);
+    link.click();
+
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
   };
 
   if (error) {
@@ -150,7 +179,7 @@ function QRCodePageInner() {
                 fill="none"
                 xmlns="http://www.w3.org/2000/svg"
                 className="cursor-pointer"
-                onClick={handleCopy}
+                onClick={handleCopyText}
               >
                 <path
                   d="M22.7161 7.14417H10.3255C8.56851 7.14417 7.14417 8.56851 7.14417 10.3255V22.7161C7.14417 24.4732 8.56851 25.8975 10.3255 25.8975H22.7161C24.4732 25.8975 25.8975 24.4732 25.8975 22.7161V10.3255C25.8975 8.56851 24.4732 7.14417 22.7161 7.14417Z"
@@ -187,7 +216,14 @@ function QRCodePageInner() {
             )}
           </div>
           <div className="grid grid-cols-2 gap-x-[18px]">
-            <button className="flex justify-between items-center px-[24px] h-[60px] rounded-xl">
+            <button
+              className="flex justify-between items-center px-[24px] h-[60px] rounded-xl"
+              onClick={() =>
+                record
+                  ? handleCopyCode(record.qr_code)
+                  : alert("Create QR code first")
+              }
+            >
               <p className="font-bold text-[24px]">Copy</p>
               <svg
                 width="29"
@@ -211,7 +247,22 @@ function QRCodePageInner() {
                 />
               </svg>
             </button>
-            <button className="flex justify-between items-center px-[24px] h-[60px] rounded-xl">
+            <button
+              className="flex justify-between items-center px-[24px] h-[60px] rounded-xl"
+              onClick={() =>
+                record
+                  ? handleSaveCode(
+                      record.qr_code,
+                      pathUrl
+                        ? `qr-${String(pathUrl)
+                            .split("/")
+                            .join("-")
+                            .replace(/[<>:"\/\\|?*]/g, "")}.svg`
+                        : undefined
+                    )
+                  : alert("Create QR code first")
+              }
+            >
               <p className="font-bold text-[24px]">Save As</p>
               <svg
                 width="32"

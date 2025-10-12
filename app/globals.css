@@ -49,6 +49,7 @@ label {
   &::placeholder {
     color: var(--placeholder);
   }
+  color: black;
 }
 
 .shortlink {

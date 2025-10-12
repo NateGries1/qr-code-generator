@@ -17,6 +17,11 @@ export async function GET(
   const data: UrlRecord | null = await redis.get(decodedSlug);
 
   if (data && data.original) {
+    data.visits += 1;
+    data.last_visited = new Date().toISOString();
+    void redis
+      .set(decodedSlug, data)
+      .catch((err) => console.error("Redis update failed:", err));
     return NextResponse.redirect(data.original);
   } else {
     const url = new URL("/", req.url);
