@@ -3,7 +3,7 @@
 import { Suspense, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { UrlRecord } from "@/types/UrlRecord";
+import { QrRecord } from "@/types/QrRecord";
 
 function QRCodePageInner() {
   const searchParams = useSearchParams();
@@ -15,7 +15,7 @@ function QRCodePageInner() {
   const [copyLink, setcopyLink] = useState<string>("https://cmla.cc/s/...");
   const [copied, setCopied] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
-  const [record, setRecord] = useState<UrlRecord | null>(null);
+  const [record, setRecord] = useState<QrRecord | null>(null);
 
   useEffect(() => {
     async function fetchQRCode() {
@@ -29,7 +29,7 @@ function QRCodePageInner() {
           }
         );
 
-        const data = await res.json();
+        const data: QrRecord | any = await res.json();
 
         if (!res.ok) {
           alert(data.error);
@@ -37,6 +37,7 @@ function QRCodePageInner() {
         }
 
         setRecord(data);
+        setcopyLink(data.new);
       } catch (err) {
         console.error("Failed to fetch QR code:", err);
       }
@@ -205,13 +206,10 @@ function QRCodePageInner() {
         </form>
 
         <div className="flex flex-col justify-between h-[575px]">
-          <div className="flex flex-col justify-center gap-y-[10px] w-[434px] h-[482px] rounded-[20px] qr-bg">
+          <div className="flex flex-col justify-center gap-y-[10px] w-[435px] h-[460px] rounded-[20px] qr-bg">
             {record && (
-              <div className="w-[375px] mx-auto">
+              <div className="w-[400px] h-[400px] mx-auto">
                 <div dangerouslySetInnerHTML={{ __html: record.qr_code }} />
-                <p className="w-full mt-2 text-center font-semibold text-[28px] break-words whitespace-normal text-foreground">
-                  {record.new}
-                </p>
               </div>
             )}
           </div>

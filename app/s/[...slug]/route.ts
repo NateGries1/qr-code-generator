@@ -12,6 +12,9 @@ export async function GET(
   context: { params: Promise<{ slug: string[] }> }
 ) {
   const { slug } = await context.params;
+  if (slug[-1] == "code") {
+    
+  }
   const decodedSlug = decodeURIComponent(slug.join("/"));
 
   const data: UrlRecord | null = await redis.get(decodedSlug);
@@ -25,7 +28,7 @@ export async function GET(
     return NextResponse.redirect(data.original);
   } else {
     const url = new URL("/", req.url);
-    url.searchParams.set("error", "1");
+    url.searchParams.set("error", "Link doesn't exist");
     url.searchParams.set("pathUrl", decodedSlug);
     return NextResponse.redirect(url);
   }
