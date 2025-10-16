@@ -29,7 +29,7 @@ function QRCodePageInner() {
           }
         );
 
-        const data: QrRecord | any = await res.json();
+        const data = await res.json();
 
         if (!res.ok) {
           alert(data.error);
