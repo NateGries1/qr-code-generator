@@ -39,12 +39,9 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const svgWithLogo = await generateQRCode(path);
-
-    const payload: QrRecord = {
+    const payload: UrlRecord = {
       original: original,
       new: newUrl,
-      qr_code: svgWithLogo,
       created_at: new Date().toISOString(),
       visits: 0,
       last_visited: null,
@@ -52,7 +49,12 @@ export async function POST(request: NextRequest) {
 
     await redis.set(path, payload);
 
-    return NextResponse.json(payload, { status: 200 });
+    const svgWithLogo = await generateQRCode(path);
+
+    return NextResponse.json(
+      { ...payload, qr_code: svgWithLogo },
+      { status: 200 }
+    );
   } catch (error) {
     return NextResponse.json({ error: error }, { status: 500 });
   }

@@ -12,9 +12,6 @@ export async function GET(
   context: { params: Promise<{ slug: string[] }> }
 ) {
   const { slug } = await context.params;
-  if (slug[-1] == "code") {
-    
-  }
   const decodedSlug = decodeURIComponent(slug.join("/"));
 
   const data: UrlRecord | null = await redis.get(decodedSlug);
