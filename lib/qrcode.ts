@@ -1,7 +1,8 @@
 import QRCode from "qrcode";
 import fs from "fs";
+import path from "path";
 
-const logoPath = "./public/logo.png";
+const logoPath = path.join(process.cwd(), "public", "logo.png");
 const logoData = fs.readFileSync(logoPath);
 const base64Logo = `data:image/png;base64,${logoData.toString("base64")}`;
 
