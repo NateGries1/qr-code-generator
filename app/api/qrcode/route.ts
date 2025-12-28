@@ -1,4 +1,4 @@
-// /api/qrcode/route.ts
+// /app/api/qrcode/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import { Redis } from "@upstash/redis";
 import { UrlRecord } from "@/types/UrlRecord";
@@ -7,8 +7,10 @@ import { generateQRCode } from "@/lib/qrcode";
 
 export const runtime = "nodejs";
 
+// Set your allowed origin
 const ALLOWED_ORIGIN = "https://cmla.cc";
 
+// Redis helper
 function getRedis() {
   return new Redis({
     url: process.env.UPSTASH_REDIS_REST_URL!,
@@ -16,7 +18,7 @@ function getRedis() {
   });
 }
 
-// Helper to attach CORS headers to every response
+// Attach CORS headers to every response
 function withCorsHeaders(response: NextResponse) {
   response.headers.set("Access-Control-Allow-Origin", ALLOWED_ORIGIN);
   response.headers.set("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
@@ -24,11 +26,12 @@ function withCorsHeaders(response: NextResponse) {
   return response;
 }
 
-// Handle CORS preflight
-export async function OPTIONS() {
+// Handle CORS preflight requests
+export async function OPTIONS(request: NextRequest) {
   return withCorsHeaders(NextResponse.json(null, { status: 204 }));
 }
 
+// Handle creating a new QR code
 export async function POST(request: NextRequest) {
   try {
     const redis = getRedis();
@@ -86,6 +89,7 @@ export async function POST(request: NextRequest) {
   }
 }
 
+// Handle fetching a QR code by path
 export async function GET(request: NextRequest) {
   try {
     const redis = getRedis();
