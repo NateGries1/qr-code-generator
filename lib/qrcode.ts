@@ -1,6 +1,7 @@
 import QRCode from "qrcode";
 import fs from "fs";
 import path from "path";
+import sharp from "sharp";
 
 const logoPath = path.join(process.cwd(), "public", "logo.png");
 const logoData = fs.readFileSync(logoPath);
@@ -92,12 +93,14 @@ export const generateQRCode = async (path: string) => {
     fill="black"
     font-size="${3}"
     font-family="Lato, Arial, sans-serif"
-    font-weight="600"
+    font-weight="500"
   >
     cmla.cc/s/${path}
   </text>
 `;
 
   const svgWithLogo = svg.replace("</svg>", `${logo}</svg>`);
-  return svgWithLogo;
+  const pngBuffer = await sharp(Buffer.from(svgWithLogo)).png().toBuffer();
+  const base64 = pngBuffer.toString("base64");
+  return base64;
 };

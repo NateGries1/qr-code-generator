@@ -3,7 +3,7 @@
 import { Suspense, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { QrRecord } from "@/types/QrRecord";
+import { QrRecord } from "@/types/UrlRecord";
 
 function QRCodePageInner() {
   const searchParams = useSearchParams();
@@ -13,9 +13,10 @@ function QRCodePageInner() {
   const [originalUrl, setOriginalUrl] = useState<string>("");
   const [path, setPath] = useState<string>("");
   const [copyLink, setcopyLink] = useState<string>("https://cmla.cc/s/...");
-  const [copied, setCopied] = useState<boolean>(false);
+  const [textCopied, setTextCopied] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
   const [record, setRecord] = useState<QrRecord | null>(null);
+  const [pngCopied, setPngCopied] = useState<boolean>(false);
 
   useEffect(() => {
     async function fetchQRCode() {
@@ -72,26 +73,48 @@ function QRCodePageInner() {
   const handleCopyText = async () => {
     try {
       await navigator.clipboard.writeText(copyLink);
-      setCopied(true);
+      setTextCopied(true);
 
-      setTimeout(() => setCopied(false), 500);
+      setTimeout(() => setTextCopied(false), 1000);
     } catch (err) {
       console.error("Failed to copy!", err);
     }
   };
 
-  const handleCopyCode = async (svgString: string) => {
+  const base64ToBlob = (base64: string, mimeType = "image/png") => {
+    const byteCharacters = atob(base64); // decode base64 to binary string
+    const byteNumbers = new Array(byteCharacters.length);
+
+    for (let i = 0; i < byteCharacters.length; i++) {
+      byteNumbers[i] = byteCharacters.charCodeAt(i);
+    }
+
+    const byteArray = new Uint8Array(byteNumbers);
+    return new Blob([byteArray], { type: mimeType });
+  };
+
+  const handleCopyCode = async (pngBase64: string) => {
+    console.log("PNG:", pngBase64.slice(0, 20));
     try {
-      await navigator.clipboard.writeText(svgString);
-      console.log("SVG copied!");
+      const blob = base64ToBlob(pngBase64);
+
+      await navigator.clipboard.write([
+        new ClipboardItem({
+          "image/png": blob,
+        }),
+      ]);
+
+      setPngCopied(true);
+      setTimeout(() => setPngCopied(false), 1000);
+
+      console.log("PNG copied!");
     } catch (err) {
-      console.error("Failed to copy SVG:", err);
+      console.error("Failed to copy PNG:", err);
     }
   };
 
-  const handleSaveCode = (svgString: string, filename = "qrcode.svg") => {
-    // Create a blob from the SVG string
-    const blob = new Blob([svgString], { type: "image/svg+xml" });
+  const handleSaveCode = (pngBase64: string, filename = "qrcode.png") => {
+    const blob = base64ToBlob(pngBase64);
 
     // Create an object URL
     const url = URL.createObjectURL(blob);
@@ -196,8 +219,13 @@ function QRCodePageInner() {
                   strokeLinejoin="round"
                 />
               </svg>
-              {copied && (
-                <span className="absolute bottom-[-34px] left-[14.5px] -translate-x-1/2 text-sm bg-white border text-black rounded px-2 py-1">
+              {textCopied && (
+                <span
+                  className={`absolute bottom-[-34px] left-[14.5px] -translate-x-1/2 text-sm bg-white border text-black rounded px-2 py-1 transition-opacity duration-300 ease-out
+                ${
+                  textCopied ? "opacity-100" : "opacity-0 pointer-events-none"
+                }`}
+                >
                   Copied
                 </span>
               )}
@@ -209,13 +237,17 @@ function QRCodePageInner() {
           <div className="flex flex-col justify-center gap-y-[10px] w-[435px] h-[460px] rounded-[20px] qr-bg">
             {record && (
               <div className="w-[400px] h-[400px] mx-auto">
-                <div dangerouslySetInnerHTML={{ __html: record.qr_code }} />
+                <img
+                  src={`data:image/png;base64,${record.qr_code}`}
+                  alt="QR code"
+                  className="w-full h-full object-contain"
+                />
               </div>
             )}
           </div>
           <div className="grid grid-cols-2 gap-x-[18px]">
             <button
-              className="flex justify-between items-center px-[24px] h-[60px] rounded-xl"
+              className="relative flex justify-between items-center px-[24px] h-[60px] rounded-xl"
               onClick={() =>
                 record
                   ? handleCopyCode(record.qr_code)
@@ -244,6 +276,12 @@ function QRCodePageInner() {
                   strokeLinejoin="round"
                 />
               </svg>
+              <span
+                className={`absolute bottom-[-34px] right-0 text-sm bg-white border text-black rounded px-2 py-1 transition-opacity duration-300 ease-out
+                ${pngCopied ? "opacity-100" : "opacity-0 pointer-events-none"}`}
+              >
+                Copied
+              </span>
             </button>
             <button
               className="flex justify-between items-center px-[24px] h-[60px] rounded-xl"
@@ -255,7 +293,7 @@ function QRCodePageInner() {
                         ? `qr-${String(pathUrl)
                             .split("/")
                             .join("-")
-                            .replace(/[<>:"\/\\|?*]/g, "")}.svg`
+                            .replace(/[<>:"\/\\|?*]/g, "")}.png`
                         : undefined
                     )
                   : alert("Create QR code first")
