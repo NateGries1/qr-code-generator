@@ -5,3 +5,7 @@ export type UrlRecord = {
   visits: number;
   last_visited: string | null;
 };
+
+export type QrRecord = UrlRecord & {
+  qr_code: string;
+};

@@ -94,7 +94,6 @@ function QRCodePageInner() {
   };
 
   const handleCopyCode = async (pngBase64: string) => {
-    console.log("PNG:", pngBase64.slice(0, 20));
     try {
       const blob = base64ToBlob(pngBase64);
 
