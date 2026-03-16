@@ -60,16 +60,9 @@ export const generateQRCode = async (path: string) => {
 
   // Add white background to full area
   svg = svg.replace(
-    '<rect width="100%" height="100%" fill="white"/>',
-    `<rect width="100%" height="100%" fill="white"/>
-    <defs>
-      <style>
-        @font-face {
-          font-family: 'Lato';
-          src: url('data:font/woff2;base64,${lato_font}') format('woff2');
-        }
-      </style>
-    </defs>`,
+    /<svg([^>]+)>/,
+    `<svg$1 preserveAspectRatio="xMidYMid meet">
+   <rect width="100%" height="100%" fill="white"/>`,
   );
 
   // Add logo + text
@@ -92,20 +85,13 @@ export const generateQRCode = async (path: string) => {
     preserveAspectRatio="xMidYMid meet"
   />
   // link
-  <rect
-    x="0"
-    y="${boxHeight}"
-    width="100%"
-    height="${extraSpace}"
-    fill="white"
-  />
   <text
     x="50%"
     y="${boxHeight + extraSpace * 0.5}"
     text-anchor="middle"
     fill="black"
     font-size="3"
-    font-family="Lato"
+    font-family="Liberation Mono"
     font-weight="500"
   >
     cmla.cc/s/${path}
