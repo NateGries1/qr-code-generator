@@ -64,7 +64,6 @@ function QRCodePageInner() {
       }
 
       setRecord(data);
-      console.log(data);
     } catch (err) {
       console.error("Error submitting form:", err);
       setLoading(false);
@@ -107,8 +106,6 @@ function QRCodePageInner() {
 
       setPngCopied(true);
       setTimeout(() => setPngCopied(false), 1000);
-
-      console.log("PNG copied!");
     } catch (err) {
       console.error("Failed to copy PNG:", err);
     }

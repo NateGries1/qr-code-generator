@@ -1,6 +1,7 @@
 import QRCode from "qrcode";
 import sharp from "sharp";
 import { base64Logo } from "./logobase64";
+import { lato_font } from "./latofont";
 
 export const generateQRCode = async (path: string) => {
   const newUrl = "https://cmla.cc/s/" + path;
@@ -16,8 +17,8 @@ export const generateQRCode = async (path: string) => {
     errorCorrectionLevel: "H",
   });
 
-  const viewBoxMatch = svgString.match(/viewBox="0 0 ([\d.]+) ([\d.]+)"/);
-  const widthMatch = svgString.match(/width="([\d.]+)"/);
+  const viewBoxMatch = svgString.match(/viewBox="0 0 ([\d.]+) ([\d.]+)"/); // ['41', '41']
+  const widthMatch = svgString.match(/width="([\d.]+)"/); // ['375']
   const heightMatch = svgString.match(/height="([\d.]+)"/);
 
   const boxWidth = viewBoxMatch
@@ -54,25 +55,34 @@ export const generateQRCode = async (path: string) => {
       `viewBox="0 0 ${boxWidth} ${extendedHeight}"`,
     )
     // Make sure the rendered height is 400, width is 375
-    .replace(/width="[\d.]+"/, `width="400"`)
+    .replace(/width="[\d.]+"/, `width="375"`)
     .replace(/height="[\d.]+"/, `height="400"`);
 
   // Add white background to full area
   svg = svg.replace(
-    /<svg([^>]+)>/,
-    `<svg$1 preserveAspectRatio="xMidYMid meet">
-   <rect width="100%" height="100%" fill="white"/>`,
+    '<rect width="100%" height="100%" fill="white"/>',
+    `<rect width="100%" height="100%" fill="white"/>
+    <defs>
+      <style>
+        @font-face {
+          font-family: 'Lato';
+          src: url('data:font/woff2;base64,${lato_font}') format('woff2');
+        }
+      </style>
+    </defs>`,
   );
 
   // Add logo + text
   const logo = `
+  // logo background
   <rect 
     x="${logoX - 1}" 
     y="${logoY - 1}" 
     width="${logoSize + 2}" 
     height="${logoSize + 2}" 
-    fill="white" 
+    fill="white"
   />
+  // logo
   <image
     href="${base64Logo}"
     x="${logoX}"
@@ -81,13 +91,21 @@ export const generateQRCode = async (path: string) => {
     height="${logoSize}"
     preserveAspectRatio="xMidYMid meet"
   />
+  // link
+  <rect
+    x="0"
+    y="${boxHeight}"
+    width="100%"
+    height="${extraSpace}"
+    fill="white"
+  />
   <text
     x="50%"
     y="${boxHeight + extraSpace * 0.5}"
     text-anchor="middle"
     fill="black"
-    font-size="${3}"
-    font-family="Lato, Arial, sans-serif"
+    font-size="3"
+    font-family="Lato"
     font-weight="500"
   >
     cmla.cc/s/${path}
