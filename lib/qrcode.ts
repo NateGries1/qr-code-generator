@@ -1,6 +1,4 @@
 import QRCode from "qrcode";
-import fs from "fs";
-import path from "path";
 import sharp from "sharp";
 import { base64Logo } from "./logobase64";
 
