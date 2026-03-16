@@ -36,8 +36,8 @@ export async function POST(request: NextRequest) {
       return withCorsHeaders(
         NextResponse.json(
           { error: "Invalid or too long path" },
-          { status: 400 }
-        )
+          { status: 400 },
+        ),
       );
     }
 
@@ -51,14 +51,14 @@ export async function POST(request: NextRequest) {
       new URL(newUrl);
     } catch {
       return withCorsHeaders(
-        NextResponse.json({ error: "Invalid URL" }, { status: 400 })
+        NextResponse.json({ error: "Invalid URL" }, { status: 400 }),
       );
     }
 
     const existing: UrlRecord | null = await redis.get(path);
     if (existing) {
       return withCorsHeaders(
-        NextResponse.json({ error: "Link Already Exists" }, { status: 409 })
+        NextResponse.json({ error: "Link Already Exists" }, { status: 409 }),
       );
     }
 
@@ -75,11 +75,11 @@ export async function POST(request: NextRequest) {
     const svgWithLogo = await generateQRCode(path);
 
     return withCorsHeaders(
-      NextResponse.json({ ...payload, qr_code: svgWithLogo }, { status: 200 })
+      NextResponse.json({ ...payload, qr_code: svgWithLogo }, { status: 200 }),
     );
   } catch (error) {
     return withCorsHeaders(
-      NextResponse.json({ error: String(error) }, { status: 500 })
+      NextResponse.json({ error: String(error) }, { status: 500 }),
     );
   }
 }
@@ -92,7 +92,7 @@ export async function GET(request: NextRequest) {
 
     if (!path) {
       return withCorsHeaders(
-        NextResponse.json({ error: "Missing pathUrl" }, { status: 400 })
+        NextResponse.json({ error: "Missing pathUrl" }, { status: 400 }),
       );
     }
 
@@ -100,14 +100,14 @@ export async function GET(request: NextRequest) {
       new URL(`https://cmla.cc/s/${path}`);
     } catch {
       return withCorsHeaders(
-        NextResponse.json({ error: "Invalid URL" }, { status: 400 })
+        NextResponse.json({ error: "Invalid URL" }, { status: 400 }),
       );
     }
 
     const data: UrlRecord | null = await redis.get(path);
     if (!data) {
       return withCorsHeaders(
-        NextResponse.json({ error: "Link Doesn't Exist" }, { status: 404 })
+        NextResponse.json({ error: "Link Doesn't Exist" }, { status: 404 }),
       );
     }
 
@@ -119,7 +119,7 @@ export async function GET(request: NextRequest) {
     return withCorsHeaders(NextResponse.json(qr_record, { status: 200 }));
   } catch (error) {
     return withCorsHeaders(
-      NextResponse.json({ error: String(error) }, { status: 500 })
+      NextResponse.json({ error: String(error) }, { status: 500 }),
     );
   }
 }
