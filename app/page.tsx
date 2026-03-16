@@ -59,8 +59,10 @@ function QRCodePageInner() {
       const data = await res.json();
 
       if (!res.ok) {
-        throw `Issue Adding QR Code: ${data.error}`;
+        alert(data.error);
+        return;
       }
+
       setRecord(data);
       console.log(data);
     } catch (err) {

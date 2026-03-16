@@ -2,10 +2,7 @@ import QRCode from "qrcode";
 import fs from "fs";
 import path from "path";
 import sharp from "sharp";
-
-const response = await fetch("https://cmla.cc/logo.png");
-const buffer = await response.arrayBuffer();
-const base64Logo = `data:image/png;base64,${Buffer.from(buffer).toString("base64")}`;
+import { base64Logo } from "./logobase64";
 
 export const generateQRCode = async (path: string) => {
   const newUrl = "https://cmla.cc/s/" + path;
