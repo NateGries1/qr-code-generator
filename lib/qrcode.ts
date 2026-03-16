@@ -3,9 +3,9 @@ import fs from "fs";
 import path from "path";
 import sharp from "sharp";
 
-const logoPath = path.join(process.cwd(), "public", "logo.png");
-const logoData = fs.readFileSync(logoPath);
-const base64Logo = `data:image/png;base64,${logoData.toString("base64")}`;
+const response = await fetch("https://cmla.cc/logo.png");
+const buffer = await response.arrayBuffer();
+const base64Logo = `data:image/png;base64,${Buffer.from(buffer).toString("base64")}`;
 
 export const generateQRCode = async (path: string) => {
   const newUrl = "https://cmla.cc/s/" + path;
@@ -28,13 +28,13 @@ export const generateQRCode = async (path: string) => {
   const boxWidth = viewBoxMatch
     ? parseFloat(viewBoxMatch[1])
     : widthMatch
-    ? parseFloat(widthMatch[1])
-    : 256;
+      ? parseFloat(widthMatch[1])
+      : 256;
   const boxHeight = viewBoxMatch
     ? parseFloat(viewBoxMatch[2])
     : heightMatch
-    ? parseFloat(heightMatch[1])
-    : 256;
+      ? parseFloat(heightMatch[1])
+      : 256;
 
   const extendedHeight = boxHeight * (400 / 375); // proportional increase (~+6.7%)
   const extraSpace = extendedHeight - boxHeight;
@@ -42,8 +42,8 @@ export const generateQRCode = async (path: string) => {
     (viewBoxMatch
       ? parseFloat(viewBoxMatch[1])
       : widthMatch
-      ? parseFloat(widthMatch[1])
-      : 256) *
+        ? parseFloat(widthMatch[1])
+        : 256) *
     (25 / 400);
 
   // logo placement remains the same
@@ -56,7 +56,7 @@ export const generateQRCode = async (path: string) => {
     // Extend the viewBox height slightly
     .replace(
       /viewBox="0 0 ([\d.]+) ([\d.]+)"/,
-      `viewBox="0 0 ${boxWidth} ${extendedHeight}"`
+      `viewBox="0 0 ${boxWidth} ${extendedHeight}"`,
     )
     // Make sure the rendered height is 400, width is 375
     .replace(/width="[\d.]+"/, `width="400"`)
@@ -66,7 +66,7 @@ export const generateQRCode = async (path: string) => {
   svg = svg.replace(
     /<svg([^>]+)>/,
     `<svg$1 preserveAspectRatio="xMidYMid meet">
-   <rect width="100%" height="100%" fill="white"/>`
+   <rect width="100%" height="100%" fill="white"/>`,
   );
 
   // Add logo + text

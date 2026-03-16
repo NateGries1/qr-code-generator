@@ -27,7 +27,7 @@ function QRCodePageInner() {
           {
             method: "GET",
             headers: { "Content-Type": "application/json" },
-          }
+          },
         );
 
         const data = await res.json();
@@ -56,11 +56,11 @@ function QRCodePageInner() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ originalUrl, path }),
       });
+      const data = await res.json();
 
       if (!res.ok) {
-        throw "Issue Adding QR Code";
+        throw `Issue Adding QR Code: ${data.error}`;
       }
-      const data = await res.json();
       setRecord(data);
       console.log(data);
     } catch (err) {
@@ -293,7 +293,7 @@ function QRCodePageInner() {
                             .split("/")
                             .join("-")
                             .replace(/[<>:"\/\\|?*]/g, "")}.png`
-                        : undefined
+                        : undefined,
                     )
                   : alert("Create QR code first")
               }
