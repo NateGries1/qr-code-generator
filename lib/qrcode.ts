@@ -5,6 +5,8 @@ import { lato_font_ttf } from "./latofont";
 import fs from "fs";
 import path from "path";
 
+console.log("cwd:", process.cwd());
+
 const fontsDir = path.join(process.cwd(), "fonts");
 fs.readdirSync(fontsDir);
 fs.mkdirSync("/tmp/fonts-cache", { recursive: true });
