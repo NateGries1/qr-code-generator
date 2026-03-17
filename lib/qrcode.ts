@@ -2,8 +2,14 @@ import QRCode from "qrcode";
 import sharp from "sharp";
 import { base64Logo } from "./logobase64";
 import { lato_font_ttf } from "./latofont";
+import fs from "fs";
+import path from "path";
 
-process.env.FONTCONFIG_PATH = "/etc/fonts";
+const fontsDir = path.join(process.cwd(), "fonts");
+fs.readdirSync(fontsDir);
+fs.mkdirSync("/tmp/fonts-cache", { recursive: true });
+
+process.env.FONTCONFIG_PATH = "/var/task/fonts";
 
 export const generateQRCode = async (path: string) => {
   const newUrl = "https://cmla.cc/s/" + path;
