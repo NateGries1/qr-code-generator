@@ -64,6 +64,14 @@ export const generateQRCode = async (path: string) => {
   svg = svg.replace(
     /<svg([^>]+)>/,
     `<svg$1 preserveAspectRatio="xMidYMid meet">
+    <defs>
+      <style>
+        @font-face {
+          font-family: 'Lato';
+          src: url('data:font/truetype;base64,${lato_font_ttf}') format('truetype');
+        }
+      </style>
+    </defs>
    <rect width="100%" height="100%" fill="white"/>`,
   );
 
@@ -90,7 +98,7 @@ export const generateQRCode = async (path: string) => {
     text-anchor="middle"
     fill="black"
     font-size="3"
-    font-family="Liberation Mono"
+    font-family="Lato"
     font-weight="500"
   >
     cmla.cc/s/${path}
