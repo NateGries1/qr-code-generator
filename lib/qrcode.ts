@@ -11,6 +11,8 @@ const fontsDir = path.join(process.cwd(), "fonts");
 fs.readdirSync(fontsDir);
 fs.mkdirSync("/tmp/fonts-cache", { recursive: true });
 
+console.log("fonts:", fs.readdirSync(path.join(process.cwd(), "fonts")));
+
 process.env.FONTCONFIG_PATH = "/var/task/fonts";
 
 export const generateQRCode = async (path: string) => {
@@ -75,7 +77,7 @@ export const generateQRCode = async (path: string) => {
     <defs>
       <style>
         @font-face {
-          font-family: 'Lato';
+          font-family: 'Lato-Regular';
           src: url('data:font/truetype;base64,${lato_font_ttf}') format('truetype');
         }
       </style>
@@ -106,7 +108,7 @@ export const generateQRCode = async (path: string) => {
     text-anchor="middle"
     fill="black"
     font-size="3"
-    font-family="Lato"
+    font-family="Lato-Regular"
     font-weight="500"
   >
     cmla.cc/s/${path}
