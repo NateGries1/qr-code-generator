@@ -3,6 +3,8 @@ import sharp from "sharp";
 import { base64Logo } from "./logobase64";
 import { lato_font } from "./latofont";
 
+process.env.FONTCONFIG_PATH = "/etc/fonts";
+
 export const generateQRCode = async (path: string) => {
   const newUrl = "https://cmla.cc/s/" + path;
   const svgString = await QRCode.toString(newUrl, {
