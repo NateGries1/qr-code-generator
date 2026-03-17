@@ -1,7 +1,7 @@
 import QRCode from "qrcode";
 import sharp from "sharp";
 import { base64Logo } from "./logobase64";
-import { lato_font } from "./latofont";
+import { lato_font_ttf } from "./latofont";
 
 process.env.FONTCONFIG_PATH = "/etc/fonts";
 
@@ -69,7 +69,6 @@ export const generateQRCode = async (path: string) => {
 
   // Add logo + text
   const logo = `
-  // logo background
   <rect 
     x="${logoX - 1}" 
     y="${logoY - 1}" 
@@ -77,7 +76,6 @@ export const generateQRCode = async (path: string) => {
     height="${logoSize + 2}" 
     fill="white"
   />
-  // logo
   <image
     href="${base64Logo}"
     x="${logoX}"
@@ -86,7 +84,6 @@ export const generateQRCode = async (path: string) => {
     height="${logoSize}"
     preserveAspectRatio="xMidYMid meet"
   />
-  // link
   <text
     x="50%"
     y="${boxHeight + extraSpace * 0.5}"
